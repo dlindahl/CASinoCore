@@ -8,7 +8,7 @@ require 'casino_core'
 
 task :default => :spec
 
-CASinoCore::RakeTasks.load_tasks
+require 'casino_core/tasks'
 
 YARD::Rake::YardocTask.new do |t|
   t.files = FileList['lib/**/*.rb']
