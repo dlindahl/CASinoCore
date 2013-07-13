@@ -3,7 +3,6 @@ module CASinoCore
     class << self
       def load_tasks
         %w(
-          database
           cleanup
           service_rule
         ).each do |task|
