@@ -4,7 +4,7 @@ require 'rails'
 module CASinoCore
   class Railtie < Rails::Railtie
     rake_tasks do
-      CASinoCore::RakeTasks.load_tasks
+      require 'casino_core/tasks'
     end
 
     initializer 'casino_core.setup_logger' do

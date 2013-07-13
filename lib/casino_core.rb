@@ -12,7 +12,6 @@ module CASinoCore
   autoload :Helper, 'casino_core/helper.rb'
   autoload :Model, 'casino_core/model.rb'
   autoload :Processor, 'casino_core/processor.rb'
-  autoload :RakeTasks, 'casino_core/rake_tasks.rb'
 
   require 'casino_core/railtie' if defined?(Rails)
 
