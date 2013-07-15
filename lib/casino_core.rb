@@ -58,8 +58,6 @@ module CASinoCore
     config.application_root = options.fetch(:application_root, config.application_root)
 
     apply_yaml_config load_file('config/cas.yml')
-
-    establish_connection unless active_record_connected?
   end
 
   def self.apply_yaml_config(yaml)
@@ -78,22 +76,6 @@ module CASinoCore
   def self.load_file(filename)
     fullpath = File.join(self.config.application_root, filename)
     IO.read(fullpath) rescue ''
-  end
-
-  def self.active_record_connected?
-    ActiveRecord::Base.connection
-  rescue ActiveRecord::ConnectionNotEstablished
-    false
-  end
-
-  def self.establish_connection
-    require 'active_record'
-    require 'yaml'
-
-    yaml   = load_file('config/database.yml')
-    db_cfg = (YAML::load(ERB.new(yaml).result)||{}).fetch(env,{})
-
-    ActiveRecord::Base.establish_connection db_cfg
   end
 end
 
