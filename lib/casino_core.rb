@@ -9,6 +9,7 @@ module CASinoCore
   include ActiveSupport::Configurable
 
   autoload :Authenticator, 'casino_core/authenticator.rb'
+  autoload :Concerns, 'casino_core/concerns.rb'
   autoload :Helper, 'casino_core/helper.rb'
   autoload :Model, 'casino_core/model.rb'
   autoload :Processor, 'casino_core/processor.rb'

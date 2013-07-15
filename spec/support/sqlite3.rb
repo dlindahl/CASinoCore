@@ -1,5 +1,15 @@
-root_path   = File.join(File.dirname(__FILE__),'..','..')
-schema_path = File.join(root_path, 'db')
+require 'active_record'
 
-CASinoCore.send(:establish_connection)
-load File.join(schema_path, 'schema.rb')
+ActiveRecord::Base.establish_connection(
+  adapter: 'sqlite3',
+  database: ':memory:',
+  verbosity: 'quiet'
+)
+
+ActiveRecord::Schema.define(:version => Time.now.to_i) do
+  create_table "models", :force => true do |t|
+    t.string "ticket" # include this?
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+end
