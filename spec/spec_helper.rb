@@ -1,5 +1,6 @@
 ENV['RAILS_ENV'] ||= ENV['DATABASE_ENV'] || 'test'
 
+require 'awesome_print'
 require 'active_support/core_ext'
 require 'simplecov'
 require 'coveralls'
@@ -34,3 +35,5 @@ require 'casino_core'
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
+
+Dir["#{File.dirname(__FILE__)}/test_models/**/*.rb"].each {|f| require f}

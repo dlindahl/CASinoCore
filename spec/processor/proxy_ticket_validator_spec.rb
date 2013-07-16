@@ -8,7 +8,7 @@ describe CASinoCore::Processor::ProxyTicketValidator do
     let(:regex_success) { /\A<cas:serviceResponse.*\n.*authenticationSuccess/ }
 
     context 'with a login ticket' do
-      let(:login_ticket) { FactoryGirl.create :login_ticket }
+      let(:login_ticket) { create :login_ticket }
       let(:parameters) { { ticket: login_ticket.ticket, service: 'http://www.example.org/' } }
 
       it 'calls the #validation_failed method on the listener' do

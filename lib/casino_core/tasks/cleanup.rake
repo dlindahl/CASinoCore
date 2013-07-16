@@ -25,7 +25,7 @@ namespace :casino_core do
 
     desc 'Remove expired login tickets.'
     task login_tickets: 'casino_core:db:configure_connection' do
-      rows_affected = CASinoCore::Model::LoginTicket.cleanup
+      rows_affected = CASinoCore.implementor(:login_ticket).cleanup
       puts "Deleted #{rows_affected} login tickets."
     end
 

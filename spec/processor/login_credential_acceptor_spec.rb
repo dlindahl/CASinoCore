@@ -19,21 +19,22 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
     before do
       CASinoCore.configure do |cfg|
         cfg.authenticators[:static] = authenticator
+        cfg.implementors[:login_ticket] = TestLoginTicket
       end
     end
 
     context 'without a valid login ticket' do
       it 'calls the #invalid_login_ticket method on the listener' do
-        listener.should_receive(:invalid_login_ticket).with(kind_of(CASinoCore::Model::LoginTicket))
+        listener.should_receive(:invalid_login_ticket).with(kind_of(CASinoCore.implementor(:login_ticket)))
         processor.process
       end
     end
 
     context 'with an expired login ticket' do
-      let(:expired_login_ticket) { FactoryGirl.create :login_ticket, :expired }
+      let(:expired_login_ticket) { create :login_ticket, :expired }
 
       it 'calls the #invalid_login_ticket method on the listener' do
-        listener.should_receive(:invalid_login_ticket).with(kind_of(CASinoCore::Model::LoginTicket))
+        listener.should_receive(:invalid_login_ticket).with(kind_of(CASinoCore.implementor(:login_ticket)))
         processor.process(lt: expired_login_ticket.ticket)
       end
     end
@@ -43,7 +44,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
 
       context 'with invalid credentials' do
         it 'calls the #invalid_login_credentials method on the listener' do
-          listener.should_receive(:invalid_login_credentials).with(kind_of(CASinoCore::Model::LoginTicket))
+          listener.should_receive(:invalid_login_credentials).with(kind_of(CASinoCore.implementor(:login_ticket)))
           processor.process(lt: login_ticket.ticket)
         end
       end
@@ -102,7 +103,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
           end
 
           it 'calls the #invalid_login_credentials method on the listener' do
-            listener.should_receive(:invalid_login_credentials).with(kind_of(CASinoCore::Model::LoginTicket))
+            listener.should_receive(:invalid_login_credentials).with(kind_of(CASinoCore.implementor(:login_ticket)))
             processor.process(login_data)
           end
         end

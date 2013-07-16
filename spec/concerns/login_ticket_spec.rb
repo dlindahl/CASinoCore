@@ -3,11 +3,7 @@ require 'spec_helper'
 describe CASinoCore::Concerns::LoginTicket do
   let(:ticket) { 'LT-12345' }
 
-  let(:am_model) do
-    Class.new(ActiveRecord::Base) do
-      include CASinoCore::Concerns::LoginTicket
-    end
-  end
+  let(:am_model) { TestLoginTicket }
 
   let(:poro_model) do
     Class.new(Poro) do
@@ -25,18 +21,10 @@ describe CASinoCore::Concerns::LoginTicket do
     context 'with an ActiveModel-compatible class' do
       let(:model) { am_model }
 
-      before do
-        instance.save!
-        instance.created_at = 10.hours.ago
-        instance.save!
-      end
+      before { create :login_ticket, :expired }
 
       it 'deletes expired login tickets' do
-        Model.stub(:delete_all).and_call_original
-
-        subject
-
-        expect(Model).to have_received(:delete_all).with kind_of(Array)
+        expect{subject}.to change{CASinoCore.implementor(:login_ticket).count}.by(-1)
       end
     end
 
@@ -56,7 +44,7 @@ describe CASinoCore::Concerns::LoginTicket do
       let(:model) { am_model }
 
       it 'returns the ticket identifier' do
-        subject.should == instance.ticket
+        expect(subject).to eq instance.ticket
       end
     end
 

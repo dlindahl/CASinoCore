@@ -21,6 +21,9 @@ module CASinoCore
     authenticators: HashWithIndifferentAccess.new,
     logger: defined?(::Logger) ? ::Logger.new(STDOUT) : nil,
     frontend: {},
+    implementors: HashWithIndifferentAccess.new(
+      login_ticket: nil
+    ),
     login_ticket: {
       lifetime: 600
     },
@@ -71,6 +74,15 @@ module CASinoCore
       end
       self.config.send("#{k}=", value)
     end
+  end
+
+  def self.implementor(name)
+    impl = config.implementors[name.to_sym]
+    impl = impl.constantize if impl.is_a? String
+    impl or raise CASinoCore::MissingImplementorError.new(name, :missing)
+  rescue NameError => e
+    raise unless e.message =~ %r{uninitialized constant}
+    raise CASinoCore::MissingImplementorError.new(name, :uninitialized, e)
   end
 
   private
