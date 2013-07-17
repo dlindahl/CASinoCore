@@ -35,7 +35,7 @@ class CASinoCore::Processor::SecondFactorAuthenticationAcceptor < CASinoCore::Pr
             acquire_service_ticket(tgt, params[:service], true).service_with_ticket_url
           end
           if tgt.long_term?
-            @listener.user_logged_in(url, tgt.ticket, CASinoCore::Settings.ticket_granting_ticket[:lifetime_long_term].seconds.from_now)
+            @listener.user_logged_in(url, tgt.ticket, CASinoCore.config.ticket_granting_ticket[:lifetime_long_term].seconds.from_now)
           else
             @listener.user_logged_in(url, tgt.ticket)
           end

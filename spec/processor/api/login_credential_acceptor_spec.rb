@@ -5,6 +5,23 @@ describe CASinoCore::Processor::API::LoginCredentialAcceptor do
     let(:listener) { Object.new }
     let(:processor) { described_class.new(listener) }
     let(:user_agent) { 'ThisIsATestBrwoser 1.0' }
+    let(:password) { 'foobar123' }
+    let(:authenticator) do
+      CASinoCore::Authenticator::Static.new(
+        users: {
+          testuser: {
+            password: password,
+            name: 'Test User'
+          }
+        }
+      )
+    end
+
+    before do
+      CASinoCore.configure do |cfg|
+        cfg.authenticators[:static] = authenticator
+      end
+    end
 
     context 'with invalid credentials' do
       let(:login_data) { { username: 'testuser', password: 'wrong' } }
@@ -26,7 +43,7 @@ describe CASinoCore::Processor::API::LoginCredentialAcceptor do
     end
 
     context 'with valid credentials' do
-      let(:login_data) { { username: 'testuser', password: 'foobar123' } }
+      let(:login_data) { { username:'testuser', password:password } }
 
       before(:each) do
         listener.stub(:user_logged_in_via_api)

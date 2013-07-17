@@ -4,6 +4,23 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
   describe '#process' do
     let(:listener) { Object.new }
     let(:processor) { described_class.new(listener) }
+    let(:password) { 'foobar123' }
+    let(:authenticator) do
+      CASinoCore::Authenticator::Static.new(
+        users: {
+          testuser: {
+            password: password,
+            name: 'Test User'
+          }
+        }
+      )
+    end
+
+    before do
+      CASinoCore.configure do |cfg|
+        cfg.authenticators[:static] = authenticator
+      end
+    end
 
     context 'without a valid login ticket' do
       it 'calls the #invalid_login_ticket method on the listener' do
@@ -34,8 +51,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
       context 'with valid credentials' do
         let(:service) { 'https://www.example.org' }
         let(:username) { 'testuser' }
-        let(:authenticator) { 'static_1' }
-        let(:login_data) { { lt: login_ticket.ticket, username: username, password: 'foobar123', service: service } }
+        let(:login_data) { { lt: login_ticket.ticket, username: username, password:password, service: service } }
 
         before(:each) do
           listener.stub(:user_logged_in)
@@ -57,7 +73,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
         end
 
         context 'with two-factor authentication enabled' do
-          let(:user) { CASinoCore::Model::User.create! username: username, authenticator: authenticator }
+          let(:user) { CASinoCore::Model::User.create! username: username, authenticator:'static' }
           let!(:two_factor_authenticator) { FactoryGirl.create :two_factor_authenticator, user: user }
 
           it 'calls the `#two_factor_authentication_pending` method on the listener' do
@@ -116,20 +132,20 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
               processor.process(login_data)
               user = CASinoCore::Model::User.last
               user.username.should == username
-              user.authenticator.should == 'static_1'
+              user.authenticator.should == 'static'
             end
           end
 
           context 'when the user already exists' do
             it 'does not regenerate the user' do
-              CASinoCore::Model::User.create! username: username, authenticator: authenticator
+              CASinoCore::Model::User.create! username: username, authenticator:'static'
               lambda do
                 processor.process(login_data)
               end.should_not change(CASinoCore::Model::User, :count)
             end
 
             it 'updates the extra attributes' do
-              user = CASinoCore::Model::User.create! username: username, authenticator: authenticator
+              user = CASinoCore::Model::User.create! username: username, authenticator:'static'
               lambda do
                 processor.process(login_data)
                 user.reload

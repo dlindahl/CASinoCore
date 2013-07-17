@@ -8,7 +8,7 @@ module CASinoCore
     end
 
     initializer 'casino_core.setup_logger' do
-      CASinoCore::Settings.logger = Rails.logger
+      CASinoCore.config.logger = Rails.logger
     end
   end
 end

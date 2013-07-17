@@ -21,7 +21,7 @@ describe CASinoCore::Model::ProxyTicket do
 
         context 'with an expired ticket' do
           before(:each) do
-            ticket.created_at = (CASinoCore::Settings.service_ticket[:"lifetime_#{state}"].seconds + 1).ago
+            ticket.created_at = (CASinoCore.config.service_ticket[:"lifetime_#{state}"].seconds + 1).ago
             ticket.save!
           end
 
