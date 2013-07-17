@@ -3,6 +3,7 @@ require 'active_support/configurable'
 require 'active_support/string_inquirer'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/hash/deep_dup'
+require 'casino_core/errors'
 
 module CASinoCore
   include ActiveSupport::Configurable

@@ -59,7 +59,7 @@ class CASinoCore::Processor::LoginCredentialAcceptor < CASinoCore::Processor
         else
           @listener.user_logged_in(url, ticket_granting_ticket.ticket)
         end
-      rescue ServiceNotAllowedError => e
+      rescue CASinoCore::ServiceNotAllowedError => e
         @listener.service_not_allowed(clean_service_url @params[:service])
       end
     end

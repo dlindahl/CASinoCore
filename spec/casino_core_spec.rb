@@ -61,4 +61,51 @@ describe CASinoCore do
       expect(described_class.env).to eq 'DEV'
     end
   end
+
+  describe '.implementor' do
+    subject { described_class.implementor(:login_ticket) }
+
+    before do
+      stub_const 'MyLoginTicket', Class.new
+      described_class.config.implementors[:login_ticket] = MyLoginTicket
+    end
+
+    context 'when :implementors is assigned' do
+      context 'a known Class' do
+        it 'returns the assigned Class' do
+          expect(subject).to eq MyLoginTicket
+        end
+      end
+
+      context 'the name of the Class as a String' do
+        before do
+          described_class.config.implementors[:login_ticket] = 'TestLoginTicket'
+        end
+
+        it 'returns the matching constant' do
+          expect(subject).to eq TestLoginTicket
+        end
+
+        context 'that does not exist' do
+          before do
+            described_class.config.implementors[:login_ticket] = 'FOO'
+          end
+
+          it 'raises an error' do
+            expect{subject}.to raise_error CASinoCore::MissingImplementorError
+          end
+        end
+      end
+
+      context 'a nil value' do
+        before do
+          described_class.config.implementors[:login_ticket] = nil
+        end
+
+        it 'raises an error' do
+          expect{subject}.to raise_error CASinoCore::MissingImplementorError
+        end
+      end
+    end
+  end
 end

@@ -7,8 +7,6 @@ module CASinoCore
       include CASinoCore::Helper::Tickets
       include CASinoCore::Helper::ProxyTickets
 
-      class ServiceNotAllowedError < StandardError; end
-
       RESERVED_CAS_PARAMETER_KEYS = ['service', 'ticket', 'gateway', 'renew']
 
       def acquire_service_ticket(ticket_granting_ticket, service, credentials_supplied = nil)
