@@ -15,7 +15,7 @@ module CASinoCore
         if ticket.nil?
           logger.info "Login ticket '#{lt}' not found"
           false
-        elsif ticket.created_at < CASinoCore::Settings.login_ticket[:lifetime].seconds.ago
+        elsif ticket.created_at < CASinoCore.config.login_ticket[:lifetime].seconds.ago
           logger.info "Login ticket '#{ticket.ticket}' expired"
           false
         else
