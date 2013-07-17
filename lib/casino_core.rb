@@ -1,49 +1,98 @@
 require 'active_support/inflector'
+require 'active_support/configurable'
+require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/hash/deep_dup'
 
 module CASinoCore
+  include ActiveSupport::Configurable
+
   autoload :Authenticator, 'casino_core/authenticator.rb'
   autoload :Helper, 'casino_core/helper.rb'
   autoload :Model, 'casino_core/model.rb'
   autoload :Processor, 'casino_core/processor.rb'
   autoload :RakeTasks, 'casino_core/rake_tasks.rb'
-  autoload :Settings, 'casino_core/settings.rb'
 
   require 'casino_core/railtie' if defined?(Rails)
 
-  class << self
-    def setup(environment = nil, options = {})
-      @environment = environment || 'development'
-      root_path = options[:application_root] || '.'
+  defaults = {
+    application_root: '.',
+    authenticators: HashWithIndifferentAccess.new,
+    logger: ::Logger.new(STDOUT),
+    frontend: {},
+    login_ticket: {
+      lifetime: 600
+    },
+    ticket_granting_ticket: {
+      lifetime: 86400,
+      lifetime_long_term: 864000
+    },
+    service_ticket: {
+      lifetime_unconsumed: 300,
+      lifetime_consumed: 86400,
+      single_sign_out_notification: {
+        timeout: 5
+      }
+    },
+    proxy_ticket: {
+      lifetime_unconsumed: 300,
+      lifetime_consumed: 86400
+    },
+    two_factor_authenticator: {
+      timeout: 180,
+      lifetime_inactive: 300,
+      drift: 30
+    }
+  }
 
-      establish_connection(@environment, root_path) unless active_record_connected?
+  self.config.merge! defaults.deep_dup
 
-      config = YAML.load_file(File.join(root_path, 'config/cas.yml'))[@environment].symbolize_keys
-      recursive_symbolize_keys!(config)
-      CASinoCore::Settings.init config
+  mattr_accessor :env
+  def self.env=(environment)
+    @@env = ActiveSupport::StringInquirer.new(environment)
+  end
+  self.env = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
+
+  def self.setup(environment = nil, options = {})
+    self.env = environment if environment
+    self.config.application_root = options.fetch(:application_root, '.')
+
+    apply_yaml_config load_file('config/cas.yml')
+
+    establish_connection unless active_record_connected?
+  end
+
+  def self.apply_yaml_config(yaml)
+    cfg = (YAML.load(ERB.new(yaml).result)||{}).fetch(env, {})
+    cfg.each do |k,v|
+      value = if v.is_a? Hash
+        self.config.fetch(k.to_sym,{}).merge(v.symbolize_keys)
+      else
+        v
+      end
+      self.config.send("#{k}=", value)
     end
+  end
 
-    private
-    def recursive_symbolize_keys! hash
-      # ugly, ugly, ugly
-      # TODO refactor!
-      hash.symbolize_keys!
-      hash.values.select{|v| v.is_a? Hash}.each{|h| recursive_symbolize_keys!(h)}
-      hash.values.select{|v| v.is_a? Array}.each{|a| a.select{|v| v.is_a? Hash}.each{|h| recursive_symbolize_keys!(h)}}
-    end
+  private
+  def self.load_file(filename)
+    fullpath = File.join(self.config.application_root, filename)
+    IO.read(fullpath) rescue ''
+  end
 
-    def active_record_connected?
-      ActiveRecord::Base.connection
-    rescue ActiveRecord::ConnectionNotEstablished
-      false
-    end
+  def self.active_record_connected?
+    ActiveRecord::Base.connection
+  rescue ActiveRecord::ConnectionNotEstablished
+    false
+  end
 
-    def establish_connection(env, root_path)
-      require 'active_record'
-      require 'yaml'
+  def self.establish_connection
+    require 'active_record'
+    require 'yaml'
 
-      db_cfg = YAML::load(ERB.new(IO.read(File.join(root_path, 'config/database.yml'))).result)[env]
-      ActiveRecord::Base.establish_connection db_cfg
-    end
+    yaml   = load_file('config/database.yml')
+    db_cfg = (YAML::load(ERB.new(yaml).result)||{}).fetch(env,{})
+
+    ActiveRecord::Base.establish_connection db_cfg
   end
 end
 

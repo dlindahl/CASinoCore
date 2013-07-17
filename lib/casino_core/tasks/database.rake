@@ -18,7 +18,7 @@ namespace :casino_core do
 
     task :configuration => :environment do
       CASinoCore.setup DATABASE_ENV
-      ActiveRecord::Base.logger = CASinoCore::Settings.logger
+      ActiveRecord::Base.logger = CASinoCore.config.logger
     end
 
     desc 'Migrate the database (options: VERSION=x, VERBOSE=false)'
