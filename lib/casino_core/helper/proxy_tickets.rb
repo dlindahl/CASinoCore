@@ -8,7 +8,7 @@ module CASinoCore
       include CASinoCore::Helper::Tickets
 
       def acquire_proxy_ticket(proxy_granting_ticket, service)
-        proxy_granting_ticket.proxy_tickets.create!({
+        proxy_granting_ticket.create_proxy_ticket!({
           ticket: random_ticket_string('PT'),
           service: service,
         })

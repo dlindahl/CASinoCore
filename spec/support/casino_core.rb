@@ -10,6 +10,9 @@ RSpec.configure do |config|
     end
 
     @base_config = CASinoCore.config.deep_dup
+
+
+    CASinoCore.rebuild_associations!
   end
 
   config.after(:each) do

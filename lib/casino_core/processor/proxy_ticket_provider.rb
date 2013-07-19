@@ -17,7 +17,7 @@ class CASinoCore::Processor::ProxyTicketProvider < CASinoCore::Processor
     if params[:pgt].nil? || params[:targetService].nil?
       @listener.request_failed build_xml false, error_code: 'INVALID_REQUEST', error_message: '"pgt" and "targetService" parameters are both required'
     else
-      proxy_granting_ticket = CASinoCore::Model::ProxyGrantingTicket.where(ticket: params[:pgt]).first
+      proxy_granting_ticket = CASinoCore.implementor(:proxy_granting_ticket).find_ticket(params[:pgt])
       if proxy_granting_ticket.nil?
         @listener.request_failed build_xml false, error_code: 'BAD_PGT', error_message: 'PGT not found'
       else

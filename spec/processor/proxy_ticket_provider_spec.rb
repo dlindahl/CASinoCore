@@ -20,7 +20,7 @@ describe CASinoCore::Processor::ProxyTicketProvider do
       it 'does not create a proxy ticket' do
         lambda do
           processor.process(params)
-        end.should_not change(CASinoCore::Model::ProxyTicket, :count)
+        end.should_not change{CASinoCore.implementor(:proxy_ticket).count}
       end
     end
 
@@ -35,12 +35,12 @@ describe CASinoCore::Processor::ProxyTicketProvider do
       it 'does not create a proxy ticket' do
         lambda do
           processor.process(params_with_deleted_pgt)
-        end.should_not change(CASinoCore::Model::ProxyTicket, :count)
+        end.should_not change{CASinoCore.implementor(:proxy_ticket).count}
       end
     end
 
     context 'with a proxy-granting ticket' do
-      let(:proxy_granting_ticket) { FactoryGirl.create :proxy_granting_ticket }
+      let(:proxy_granting_ticket) { create :proxy_granting_ticket }
       let(:params_with_valid_pgt) { params.merge(pgt: proxy_granting_ticket.ticket) }
 
       it 'calls the #request_succeeded method on the listener' do
@@ -56,7 +56,7 @@ describe CASinoCore::Processor::ProxyTicketProvider do
 
       it 'includes the proxy ticket in the response' do
         listener.should_receive(:request_succeeded) do |response|
-          proxy_ticket = CASinoCore::Model::ProxyTicket.last
+          proxy_ticket = CASinoCore.implementor(:proxy_ticket).last
           response.should =~ /<cas:proxyTicket>#{proxy_ticket.ticket}<\/cas:proxyTicket>/
         end
         processor.process(params_with_valid_pgt)

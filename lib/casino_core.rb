@@ -22,7 +22,9 @@ module CASinoCore
     logger: defined?(::Logger) ? ::Logger.new(STDOUT) : nil,
     frontend: {},
     implementors: HashWithIndifferentAccess.new(
-      login_ticket: nil
+      login_ticket: nil,
+      proxy_granting_ticket: nil,
+      proxy_ticket: nil
     ),
     login_ticket: {
       lifetime: 600
@@ -62,6 +64,25 @@ module CASinoCore
     config.application_root = options.fetch(:application_root, config.application_root)
 
     apply_yaml_config load_file('config/cas.yml')
+
+    rebuild_associations!
+  end
+
+  def self.rebuild_associations!
+    config.implementors.each do |name, klass|
+      klass = implementor(name) if klass.is_a?(String)
+      next unless klass.respond_to?(:reflections)
+      klass.reflect_on_all_associations.each do |reflection|
+        # Skip polymorphic associations because their classes are defined by
+        # their "[association_name]_type" field.
+        next if reflection.options[:polymorphic]
+        model_name = reflection.name.to_s.singularize
+        model = CASinoCore.implementor(model_name)
+
+        reflection.instance_variable_set('@klass', model)
+        reflection.instance_variable_set('@class_name', model.to_s)
+      end
+    end
   end
 
   def self.apply_yaml_config(yaml)

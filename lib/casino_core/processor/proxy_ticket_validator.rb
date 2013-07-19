@@ -14,13 +14,19 @@ class CASinoCore::Processor::ProxyTicketValidator < CASinoCore::Processor::Servi
   def process(params = nil)
     params ||= {}
     if request_valid?(params)
-      ticket = if params[:ticket].start_with?('PT-')
-        CASinoCore::Model::ProxyTicket.where(ticket: params[:ticket]).first
+      class_name = if params[:ticket].start_with?('PT-')
+        :proxy_ticket
       elsif params[:ticket].start_with?('ST-')
-        CASinoCore::Model::ServiceTicket.where(ticket: params[:ticket]).first
+        :service_ticket
+      end
+
+      ticket = if class_name
+        implementor = CASinoCore.config.implementors[class_name]
+        implementor.find_ticket(params[:ticket])
       else
         nil
       end
+
       validate_ticket!(ticket, params)
     end
   end
