@@ -1,8 +1,7 @@
 require 'builder'
 require 'faraday'
-require 'casino_core/model/service_ticket'
 
-class CASinoCore::Model::ServiceTicket::SingleSignOutNotifier
+class CASinoCore::Notifiers::SingleSignOutNotifier
   include CASinoCore::Helper::Logger
 
   def initialize(service_ticket)

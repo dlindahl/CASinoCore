@@ -43,7 +43,7 @@ describe CASinoCore::Processor::API::ServiceTicketProvider do
         listener.should_receive(:granted_service_ticket_via_api).with(/^ST\-/)
         expect {
           processor.process(ticket, parameters, user_agent)
-        }.to change(CASinoCore::Model::ServiceTicket, :count).by(1)
+        }.to change{CASinoCore.implementor(:service_ticket).count}.by(1)
       end
 
       context 'without a service' do

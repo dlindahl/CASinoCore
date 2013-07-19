@@ -166,7 +166,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
           it 'generates a service ticket' do
             lambda do
               processor.process(login_data)
-            end.should change(CASinoCore::Model::ServiceTicket, :count).by(1)
+            end.should change{CASinoCore.implementor(:service_ticket).count}.by(1)
           end
 
           it 'generates a ticket-granting ticket' do

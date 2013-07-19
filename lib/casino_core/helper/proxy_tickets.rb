@@ -37,7 +37,7 @@ module CASinoCore
 
       private
       def validate_existing_ticket_for_service(ticket, service, renew = false)
-        if ticket.is_a?(CASinoCore::Model::ServiceTicket)
+        if ticket.is_a?(CASinoCore.implementor(:service_ticket))
           service = clean_service_url(service)
         end
         if ticket.consumed?

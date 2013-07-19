@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'nokogiri'
 
-describe CASinoCore::Model::ServiceTicket::SingleSignOutNotifier do
-  let(:service_ticket) { FactoryGirl.create :service_ticket }
+describe CASinoCore::Notifiers::SingleSignOutNotifier do
+  let(:service_ticket) { create :service_ticket }
   let(:service) { service_ticket.service }
   let(:notifier) { described_class.new service_ticket }
 

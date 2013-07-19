@@ -12,6 +12,7 @@ module CASinoCore
   autoload :Concerns, 'casino_core/concerns.rb'
   autoload :Helper, 'casino_core/helper.rb'
   autoload :Model, 'casino_core/model.rb'
+  autoload :Notifiers, 'casino_core/notifiers.rb'
   autoload :Processor, 'casino_core/processor.rb'
 
   require 'casino_core/railtie' if defined?(Rails)
@@ -24,7 +25,8 @@ module CASinoCore
     implementors: HashWithIndifferentAccess.new(
       login_ticket: nil,
       proxy_granting_ticket: nil,
-      proxy_ticket: nil
+      proxy_ticket: nil,
+      service_ticket: nil
     ),
     login_ticket: {
       lifetime: 600

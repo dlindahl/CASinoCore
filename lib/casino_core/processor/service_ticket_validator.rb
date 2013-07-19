@@ -16,7 +16,7 @@ class CASinoCore::Processor::ServiceTicketValidator < CASinoCore::Processor
   def process(params = nil)
     params ||= {}
     if request_valid?(params)
-      ticket = CASinoCore::Model::ServiceTicket.where(ticket: params[:ticket]).first
+      ticket = CASinoCore.implementor(:service_ticket).find_ticket(params[:ticket])
       validate_ticket!(ticket, params)
     end
   end

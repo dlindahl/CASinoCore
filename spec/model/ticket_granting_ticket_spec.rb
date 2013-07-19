@@ -10,7 +10,7 @@ describe CASinoCore::Model::TicketGrantingTicket do
 
     context 'when notification for a service ticket fails' do
       before(:each) do
-        CASinoCore::Model::ServiceTicket::SingleSignOutNotifier.any_instance.stub(:notify).and_return(false)
+        CASinoCore::Notifiers::SingleSignOutNotifier.any_instance.stub(:notify).and_return(false)
       end
 
       it 'deletes depending proxy-granting tickets' do

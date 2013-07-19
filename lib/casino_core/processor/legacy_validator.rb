@@ -14,7 +14,7 @@ class CASinoCore::Processor::LegacyValidator < CASinoCore::Processor
   # @param [Hash] params parameters supplied by requestor (a service)
   def process(params = nil)
     params ||= {}
-    ticket = CASinoCore::Model::ServiceTicket.where(ticket: params[:ticket]).first
+    ticket = CASinoCore.implementor(:service_ticket).find_ticket(params[:ticket])
     if !params[:service].nil? && ticket_valid_for_service?(ticket, params[:service], !!params[:renew])
       @listener.validation_succeeded("yes\n#{ticket.ticket_granting_ticket.user.username}\n")
     else

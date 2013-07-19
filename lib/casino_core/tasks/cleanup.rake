@@ -7,11 +7,12 @@ namespace :casino_core do
   namespace :cleanup do
     desc 'Remove expired service tickets.'
     task service_tickets: 'casino_core:db:configure_connection' do
+      implementor = CASinoCore.implementor(:service_ticket)
       [:consumed, :unconsumed].each do |type|
-        rows_affected = CASinoCore::Model::ServiceTicket.send("cleanup_#{type}").length
+        rows_affected = implementor.send("cleanup_#{type}")
         puts "Deleted #{rows_affected} #{type} service tickets."
       end
-      rows_affected = CASinoCore::Model::ServiceTicket.cleanup_consumed_hard
+      rows_affected = implementor.cleanup_consumed(:force)
       puts "Force deleted #{rows_affected} consumed service tickets."
     end
 

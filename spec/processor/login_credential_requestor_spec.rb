@@ -88,7 +88,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
         it 'generates a service ticket' do
           lambda do
             processor.process(params, cookies, user_agent)
-          end.should change(CASinoCore::Model::ServiceTicket, :count).by(1)
+          end.should change{CASinoCore.implementor(:service_ticket).count}.by(1)
         end
 
         context 'with renew parameter' do
@@ -118,7 +118,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
         it 'does not generate a service ticket' do
           lambda do
             processor.process(nil, cookies, user_agent)
-          end.should change(CASinoCore::Model::ServiceTicket, :count).by(0)
+          end.should_not change{CASinoCore.implementor(:service_ticket).count}
         end
 
         context 'with a changed browser' do
