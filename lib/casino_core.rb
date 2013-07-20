@@ -26,7 +26,8 @@ module CASinoCore
       login_ticket: nil,
       proxy_granting_ticket: nil,
       proxy_ticket: nil,
-      service_ticket: nil
+      service_ticket: nil,
+      ticket_granting_ticket: nil
     ),
     login_ticket: {
       lifetime: 600

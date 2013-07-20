@@ -13,13 +13,13 @@ describe CASinoCore::Processor::Logout do
     end
 
     context 'with an existing ticket-granting ticket' do
-      let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket }
+      let(:ticket_granting_ticket) { create :ticket_granting_ticket }
       let(:tgt) { ticket_granting_ticket.ticket }
       let(:user_agent) { ticket_granting_ticket.user_agent }
 
       it 'deletes the ticket-granting ticket' do
         processor.process(params, cookies, user_agent)
-        CASinoCore::Model::TicketGrantingTicket.where(id: ticket_granting_ticket.id).first.should == nil
+        CASinoCore.implementor(:ticket_granting_ticket).find_id(ticket_granting_ticket.id).should == nil
       end
 
       it 'calls the #user_logged_out method on the listener' do

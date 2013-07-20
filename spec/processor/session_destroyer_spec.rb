@@ -4,7 +4,7 @@ describe CASinoCore::Processor::SessionDestroyer do
   describe '#process' do
     let(:listener) { Object.new }
     let(:processor) { described_class.new(listener) }
-    let(:owner_ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket }
+    let(:owner_ticket_granting_ticket) { create :ticket_granting_ticket }
     let(:user) { owner_ticket_granting_ticket.user }
     let(:user_agent) { owner_ticket_granting_ticket.user_agent }
     let(:cookies) { { tgt: owner_ticket_granting_ticket.ticket } }
@@ -15,7 +15,7 @@ describe CASinoCore::Processor::SessionDestroyer do
     end
 
     context 'with an existing ticket-granting ticket' do
-      let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket, user: user }
+      let(:ticket_granting_ticket) { create :ticket_granting_ticket, user: user }
       let(:service_ticket) { create :service_ticket, ticket_granting_ticket: ticket_granting_ticket }
       let(:consumed_service_ticket) { create :service_ticket, :consumed, ticket_granting_ticket: ticket_granting_ticket }
       let(:params) { { id: ticket_granting_ticket.id } }
@@ -25,12 +25,12 @@ describe CASinoCore::Processor::SessionDestroyer do
         owner_ticket_granting_ticket
         lambda do
           processor.process(params, cookies, user_agent)
-        end.should change(CASinoCore::Model::TicketGrantingTicket, :count).by(-1)
+        end.should change{CASinoCore.implementor(:ticket_granting_ticket).count}.by(-1)
       end
 
       it 'deletes the ticket-granting ticket' do
         processor.process(params, cookies, user_agent)
-        CASinoCore::Model::TicketGrantingTicket.where(id: params[:id]).length.should == 0
+        CASinoCore.implementor(:ticket_granting_ticket).find_id(params[:id]).should be_nil
       end
 
       it 'calls the #ticket_deleted method on the listener' do
@@ -45,7 +45,7 @@ describe CASinoCore::Processor::SessionDestroyer do
         owner_ticket_granting_ticket
         lambda do
           processor.process(params, cookies, user_agent)
-        end.should_not change(CASinoCore::Model::TicketGrantingTicket, :count)
+        end.should_not change{CASinoCore.implementor(:ticket_granting_ticket).count}
       end
 
       it 'calls the #ticket_not_found method on the listener' do
@@ -55,7 +55,7 @@ describe CASinoCore::Processor::SessionDestroyer do
     end
 
     context 'when trying to delete ticket-granting ticket of another user' do
-      let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket }
+      let(:ticket_granting_ticket) { create :ticket_granting_ticket }
       let(:params) { { id: ticket_granting_ticket.id } }
 
       it 'does not delete a ticket-granting ticket' do
@@ -63,7 +63,7 @@ describe CASinoCore::Processor::SessionDestroyer do
         ticket_granting_ticket
         lambda do
           processor.process(params, cookies, user_agent)
-        end.should change(CASinoCore::Model::TicketGrantingTicket, :count).by(0)
+        end.should_not change{CASinoCore.implementor(:ticket_granting_ticket).count}
       end
 
       it 'calls the #ticket_not_found method on the listener' do

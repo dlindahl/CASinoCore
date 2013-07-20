@@ -47,7 +47,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
     end
 
     context 'when logged in' do
-      let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket }
+      let(:ticket_granting_ticket) { create :ticket_granting_ticket }
       let(:user_agent) { ticket_granting_ticket.user_agent }
       let(:cookies) { { tgt: ticket_granting_ticket.ticket } }
 
@@ -56,7 +56,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
       end
 
       context 'when two-factor authentication is pending' do
-        let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket, :awaiting_two_factor_authentication }
+        let(:ticket_granting_ticket) { create :ticket_granting_ticket, :awaiting_two_factor_authentication }
 
         it 'calls the #user_not_logged_in method on the listener' do
           listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore.implementor(:login_ticket)))

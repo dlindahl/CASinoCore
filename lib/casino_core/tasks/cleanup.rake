@@ -39,7 +39,7 @@ namespace :casino_core do
 
     desc 'Remove expired ticket-granting tickets.'
     task ticket_granting_tickets: 'casino_core:db:configure_connection' do
-      rows_affected = CASinoCore::Model::TicketGrantingTicket.cleanup.length
+      rows_affected = CASinoCore.implementor(:ticket_granting_ticket).cleanup
       puts "Deleted #{rows_affected} ticket-granting tickets."
     end
 

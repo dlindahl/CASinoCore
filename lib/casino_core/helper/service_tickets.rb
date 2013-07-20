@@ -16,7 +16,7 @@ module CASinoCore
           logger.error message
           raise ServiceNotAllowedError, message
         end
-        ticket_granting_ticket.service_tickets.create!({
+        ticket_granting_ticket.create_service_ticket!({
           ticket: random_ticket_string('ST'),
           service: service_url,
           issued_from_credentials: !!credentials_supplied

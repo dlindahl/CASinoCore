@@ -18,8 +18,8 @@ class CASinoCore::Processor::SessionDestroyer < CASinoCore::Processor
   def process(params = nil, cookies = nil, user_agent = nil)
     params ||= {}
     cookies ||= {}
-    ticket = CASinoCore::Model::TicketGrantingTicket.where(id: params[:id]).first
-    owner_ticket = CASinoCore::Model::TicketGrantingTicket.where(ticket: cookies[:tgt]).first
+    ticket = CASinoCore.implementor(:ticket_granting_ticket).find_id(params[:id])
+    owner_ticket = CASinoCore.implementor(:ticket_granting_ticket).find_ticket(cookies[:tgt])
     if ticket.nil? || !ticket.same_user?(owner_ticket)
       @listener.ticket_not_found
     else

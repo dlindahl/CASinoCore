@@ -18,7 +18,7 @@ describe CASinoCore::Processor::API::ServiceTicketProvider do
     end
 
     context 'with a valid ticket-granting ticket' do
-      let(:ticket_granting_ticket) { FactoryGirl.create(:ticket_granting_ticket) }
+      let(:ticket_granting_ticket) { create(:ticket_granting_ticket) }
       let(:ticket) { ticket_granting_ticket.ticket }
       let(:user_agent) { ticket_granting_ticket.user_agent }
 

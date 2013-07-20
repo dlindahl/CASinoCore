@@ -68,7 +68,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
 
           it 'creates a long-term ticket-granting ticket' do
             processor.process(login_data_with_remember_me)
-            tgt = CASinoCore::Model::TicketGrantingTicket.last
+            tgt = CASinoCore.implementor(:ticket_granting_ticket).last
             tgt.long_term.should == true
           end
         end
@@ -119,7 +119,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
           it 'generates a ticket-granting ticket' do
             lambda do
               processor.process(login_data)
-            end.should change(CASinoCore::Model::TicketGrantingTicket, :count).by(1)
+            end.should change{CASinoCore.implementor(:ticket_granting_ticket).count}.by(1)
           end
 
           context 'when the user does not exist yet' do
@@ -172,7 +172,7 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
           it 'generates a ticket-granting ticket' do
             lambda do
               processor.process(login_data)
-            end.should change(CASinoCore::Model::TicketGrantingTicket, :count).by(1)
+            end.should change{CASinoCore.implementor(:ticket_granting_ticket).count}.by(1)
           end
         end
       end
