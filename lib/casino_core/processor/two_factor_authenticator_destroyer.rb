@@ -26,7 +26,7 @@ class CASinoCore::Processor::TwoFactorAuthenticatorDestroyer < CASinoCore::Proce
     if tgt.nil?
       @listener.user_not_logged_in
     else
-      authenticator = tgt.user.two_factor_authenticators.where(id: params[:id]).first
+      authenticator = tgt.user.two_factor_authenticator(params[:id])
       if authenticator
         authenticator.destroy
         @listener.two_factor_authenticator_destroyed

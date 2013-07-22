@@ -5,5 +5,6 @@ module CASinoCore
     autoload :ProxyTicket, 'casino_core/concerns/proxy_ticket.rb'
     autoload :ServiceTicket, 'casino_core/concerns/service_ticket.rb'
     autoload :TicketGrantingTicket, 'casino_core/concerns/ticket_granting_ticket.rb'
+    autoload :User, 'casino_core/concerns/user.rb'
   end
 end

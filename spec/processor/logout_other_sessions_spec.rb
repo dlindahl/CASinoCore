@@ -13,7 +13,7 @@ describe CASinoCore::Processor::OtherSessionsDestroyer do
     end
 
     context 'with an existing ticket-granting ticket' do
-      let(:user) { FactoryGirl.create :user }
+      let(:user) { create :user }
       let!(:other_users_ticket_granting_tickets) { create_list :ticket_granting_ticket, 3 }
       let!(:other_ticket_granting_tickets) { create_list :ticket_granting_ticket, 3, user: user }
       let!(:ticket_granting_ticket) { create :ticket_granting_ticket, user: user }

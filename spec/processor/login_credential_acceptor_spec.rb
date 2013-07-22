@@ -74,8 +74,8 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
         end
 
         context 'with two-factor authentication enabled' do
-          let(:user) { CASinoCore::Model::User.create! username: username, authenticator:'static' }
           let!(:two_factor_authenticator) { FactoryGirl.create :two_factor_authenticator, user: user }
+          let(:user) { create :user, username: username, authenticator:'static' }
 
           it 'calls the `#two_factor_authentication_pending` method on the listener' do
             listener.should_receive(:two_factor_authentication_pending).with(/^TGC\-/)
@@ -126,12 +126,12 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
             it 'generates exactly one user' do
               lambda do
                 processor.process(login_data)
-              end.should change(CASinoCore::Model::User, :count).by(1)
+              end.should change{CASinoCore.implementor(:user).count}.by(1)
             end
 
             it 'sets the users attributes' do
               processor.process(login_data)
-              user = CASinoCore::Model::User.last
+              user = CASinoCore.implementor(:user).last
               user.username.should == username
               user.authenticator.should == 'static'
             end
@@ -139,14 +139,14 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
 
           context 'when the user already exists' do
             it 'does not regenerate the user' do
-              CASinoCore::Model::User.create! username: username, authenticator:'static'
+              create :user, username: username, authenticator:'static'
               lambda do
                 processor.process(login_data)
-              end.should_not change(CASinoCore::Model::User, :count)
+              end.should_not change{CASinoCore.implementor(:user).count}
             end
 
             it 'updates the extra attributes' do
-              user = CASinoCore::Model::User.create! username: username, authenticator:'static'
+              user = create :user, username: username, authenticator:'static'
               lambda do
                 processor.process(login_data)
                 user.reload

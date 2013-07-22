@@ -22,7 +22,7 @@ class CASinoCore::Processor::OtherSessionsDestroyer < CASinoCore::Processor
     cookies ||= {}
     tgt = find_valid_ticket_granting_ticket(cookies[:tgt], user_agent)
     unless tgt.nil?
-      other_ticket_granting_tickets = tgt.user.ticket_granting_tickets.where('id != ?', tgt.id)
+      other_ticket_granting_tickets = tgt.user.other_ticket_granting_tickets(tgt.id)
       other_ticket_granting_tickets.destroy_all
     end
     @listener.other_sessions_destroyed(params[:service])

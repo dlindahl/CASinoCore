@@ -34,16 +34,16 @@ module CASinoCore
         user = load_or_initialize_user(authentication_result[:authenticator], user_data[:username], user_data[:extra_attributes])
         cleanup_expired_ticket_granting_tickets(user)
 
-        user.ticket_granting_tickets.create!({
+        user.create_ticket_granting_ticket!({
           ticket: random_ticket_string('TGC'),
-          awaiting_two_factor_authentication: !user.active_two_factor_authenticator.nil?,
+          awaiting_two_factor_authentication: !user.active_two_factor_authenticators.empty?,
           user_agent: user_agent,
           long_term: !!long_term
         })
       end
 
       def load_or_initialize_user(authenticator, username, extra_attributes)
-        user = CASinoCore.config.implementors[:user].load_or_initialize(
+        user = CASinoCore.implementor(:user).load_or_initialize(
           authenticator: authenticator,
           username: username
         )
