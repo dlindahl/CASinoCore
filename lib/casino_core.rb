@@ -11,7 +11,6 @@ module CASinoCore
   autoload :Authenticator, 'casino_core/authenticator.rb'
   autoload :Concerns, 'casino_core/concerns.rb'
   autoload :Helper, 'casino_core/helper.rb'
-  autoload :Model, 'casino_core/model.rb'
   autoload :Notifiers, 'casino_core/notifiers.rb'
   autoload :Processor, 'casino_core/processor.rb'
 

@@ -1,6 +1,5 @@
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The Logout processor should be used to process GET requests to /logout.
 class CASinoCore::Processor::Logout < CASinoCore::Processor

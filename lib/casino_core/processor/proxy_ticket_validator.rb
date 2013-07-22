@@ -1,7 +1,6 @@
 require 'builder'
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The ProxyTicketValidator processor should be used to handle GET requests to /proxyValidate
 class CASinoCore::Processor::ProxyTicketValidator < CASinoCore::Processor::ServiceTicketValidator

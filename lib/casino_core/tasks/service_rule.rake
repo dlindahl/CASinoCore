@@ -1,5 +1,4 @@
 require 'terminal-table'
-require 'casino_core/model'
 require 'casino_core/helper/service_tickets'
 
 namespace :casino_core do

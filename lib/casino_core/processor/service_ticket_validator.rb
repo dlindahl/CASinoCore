@@ -1,6 +1,5 @@
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 require 'casino_core/builder'
 
 # The ServiceTicketValidator processor should be used to handle GET requests to /serviceValidate

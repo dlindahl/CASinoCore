@@ -1,6 +1,5 @@
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The SessionDestroyer processor is used to destroy a ticket-granting ticket.
 #

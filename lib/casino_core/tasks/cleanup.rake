@@ -1,7 +1,6 @@
 require 'yaml'
 require 'logger'
 require 'active_record'
-require 'casino_core/model'
 
 namespace :casino_core do
   namespace :cleanup do
