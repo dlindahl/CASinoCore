@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-[CASinoCore::Processor::ServiceTicketValidator, CASinoCore::Processor::ProxyTicketValidator].each do |class_under_test|
-  describe class_under_test do
+describe 'Ticket Validators' do
+  shared_examples_for 'ticket validator' do
     describe '#process' do
       let(:listener) { Object.new }
       let(:processor) { described_class.new(listener) }
@@ -195,5 +195,13 @@ require 'spec_helper'
         end
       end
     end
+  end
+
+  describe CASinoCore::Processor::ServiceTicketValidator do
+    include_examples 'ticket validator'
+  end
+
+  describe CASinoCore::Processor::ProxyTicketValidator do
+    include_examples 'ticket validator'
   end
 end
