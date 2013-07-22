@@ -6,6 +6,9 @@ describe CASinoCore::Notifiers::SingleSignOutNotifier do
   let(:service) { service_ticket.service }
   let(:notifier) { described_class.new service_ticket }
 
+  before { CASinoCore.config.sso_notifications = true }
+  after { CASinoCore.config.sso_notifications = false }
+
   describe '#notify' do
     before(:each) do
       stub_request(:post, service)

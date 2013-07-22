@@ -17,6 +17,8 @@ module CASinoCore
 
   require 'casino_core/railtie' if defined?(Rails)
 
+  env = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
+
   defaults = {
     application_root: '.',
     authenticators: HashWithIndifferentAccess.new,
@@ -46,6 +48,7 @@ module CASinoCore
         timeout: 5
       }
     },
+    sso_notifications: env != 'test', # Disable SSO Notifications in test mode
     proxy_ticket: {
       lifetime_unconsumed: 300,
       lifetime_consumed: 86400
@@ -63,7 +66,7 @@ module CASinoCore
   def self.env=(environment)
     @@env = ActiveSupport::StringInquirer.new(environment)
   end
-  self.env = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
+  self.env = env
 
   def self.setup(environment = nil, options = {})
     self.env = environment if environment

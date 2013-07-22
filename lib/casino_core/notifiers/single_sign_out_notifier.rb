@@ -8,8 +8,12 @@ class CASinoCore::Notifiers::SingleSignOutNotifier
     @service_ticket = service_ticket
   end
 
+  def notify?
+    CASinoCore.config.sso_notifications
+  end
+
   def notify
-    send_notification @service_ticket.service, build_xml
+    send_notification(@service_ticket.service, build_xml) if notify?
   end
 
   private

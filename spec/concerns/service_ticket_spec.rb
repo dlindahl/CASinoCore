@@ -95,8 +95,11 @@ describe CASinoCore::Concerns::ServiceTicket do
     subject { instance.send_sso_notification }
 
     before do
+      CASinoCore.config.sso_notifications = true
       instance.stub(:sso_notifier).and_return double('sso', notify:notified)
     end
+
+    after { CASinoCore.config.sso_notifications = false }
 
     shared_examples 'a sent SSO notification' do
       it 'should send the notification' do
