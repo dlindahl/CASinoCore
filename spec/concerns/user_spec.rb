@@ -45,7 +45,7 @@ describe CASinoCore::Concerns::User do
       let(:instance) { create :user_with_two_factor_auth, active:true }
 
       it 'returns the ticket identifier' do
-        expect(subject).to be_an_instance_of CASinoCore.config.implementors[:two_factor_authenticator]
+        expect(subject).to be_an_instance_of CASinoCore.implementor(:two_factor_authenticator)
       end
     end
 

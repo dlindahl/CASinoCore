@@ -20,7 +20,7 @@ describe CASinoCore::Processor::TwoFactorAuthenticatorDestroyer do
       let(:params) { { id: two_factor_authenticator.id } }
 
       context 'with a valid two-factor authenticator' do
-        let!(:two_factor_authenticator) { FactoryGirl.create :two_factor_authenticator, user: user }
+        let!(:two_factor_authenticator) { create :two_factor_authenticator, user: user }
 
         it 'calls the #two_factor_authenticator_destroyed method on the listener' do
           listener.should_receive(:two_factor_authenticator_destroyed).with(no_args)
@@ -35,15 +35,15 @@ describe CASinoCore::Processor::TwoFactorAuthenticatorDestroyer do
         end
 
         it 'does not delete other two-factor authenticators' do
-          other = FactoryGirl.create :two_factor_authenticator
+          other = create :two_factor_authenticator
           lambda do
             processor.process(params, cookies, user_agent)
-          end.should change(CASinoCore::Model::TwoFactorAuthenticator, :count).by(-1)
+          end.should change{CASinoCore.implementor(:two_factor_authenticator).count}.by(-1)
         end
       end
 
       context 'with a two-factor authenticator of another user' do
-        let!(:two_factor_authenticator) { FactoryGirl.create :two_factor_authenticator }
+        let!(:two_factor_authenticator) { create :two_factor_authenticator }
 
         it 'calls the #invalid_two_factor_authenticator method on the listener' do
           listener.should_receive(:invalid_two_factor_authenticator).with(no_args)
@@ -53,7 +53,7 @@ describe CASinoCore::Processor::TwoFactorAuthenticatorDestroyer do
         it 'does not delete two-factor authenticators' do
           lambda do
             processor.process(params, cookies, user_agent)
-          end.should_not change(CASinoCore::Model::TwoFactorAuthenticator, :count)
+          end.should_not change{CASinoCore.implementor(:two_factor_authenticator).count}
         end
       end
     end

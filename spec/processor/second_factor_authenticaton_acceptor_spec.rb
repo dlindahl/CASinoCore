@@ -21,7 +21,7 @@ describe CASinoCore::Processor::SecondFactorAuthenticationAcceptor do
       let(:params) { { tgt: tgt, otp: otp, service: service }}
 
       context 'with an active authenticator' do
-        let!(:two_factor_authenticator) { FactoryGirl.create :two_factor_authenticator, user: user }
+        let!(:two_factor_authenticator) { create :two_factor_authenticator, user: user }
 
         context 'with a valid OTP' do
           before(:each) do

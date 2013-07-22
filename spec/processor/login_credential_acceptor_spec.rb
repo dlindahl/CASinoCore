@@ -74,8 +74,8 @@ describe CASinoCore::Processor::LoginCredentialAcceptor do
         end
 
         context 'with two-factor authentication enabled' do
-          let!(:two_factor_authenticator) { FactoryGirl.create :two_factor_authenticator, user: user }
           let(:user) { create :user, username: username, authenticator:'static' }
+          let!(:two_factor_authenticator) { create :two_factor_authenticator, user: user }
 
           it 'calls the `#two_factor_authentication_pending` method on the listener' do
             listener.should_receive(:two_factor_authentication_pending).with(/^TGC\-/)

@@ -33,7 +33,7 @@ namespace :casino_core do
 
     desc 'Remove expired inactive two-factor authenticators.'
     task two_factor_authenticators: 'casino_core:db:configure_connection' do
-      rows_affected = CASinoCore::Model::TwoFactorAuthenticator.cleanup
+      rows_affected = CASinoCore.implementor(:two_factor_authenticator).cleanup
       puts "Deleted #{rows_affected} inactive two-factor authenticators."
     end
 
