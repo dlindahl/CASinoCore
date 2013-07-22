@@ -26,6 +26,7 @@ module CASinoCore
       login_ticket: nil,
       proxy_granting_ticket: nil,
       proxy_ticket: nil,
+      service_rule: nil,
       service_ticket: nil,
       ticket_granting_ticket: nil,
       two_factor_authenticator: nil,

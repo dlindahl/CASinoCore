@@ -24,7 +24,7 @@ describe CASinoCore::Processor::API::ServiceTicketProvider do
 
       context 'with a not allowed service' do
         before(:each) do
-          FactoryGirl.create :service_rule, :regex, url: '^https://.*'
+          create :service_rule, :regex, url: '^https://.*'
         end
         let(:service) { 'http://www.example.org/' }
 

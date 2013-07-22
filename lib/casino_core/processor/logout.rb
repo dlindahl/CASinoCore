@@ -18,7 +18,7 @@ class CASinoCore::Processor::Logout < CASinoCore::Processor
     params ||= {}
     cookies ||= {}
     remove_ticket_granting_ticket(cookies[:tgt], user_agent)
-    if params[:service] && CASinoCore::Model::ServiceRule.allowed?(params[:service])
+    if params[:service] && CASinoCore.implementor(:service_rule).allowed?(params[:service])
       @listener.user_logged_out(params[:service], true)
     else
       @listener.user_logged_out(params[:url])

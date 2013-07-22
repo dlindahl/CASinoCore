@@ -49,7 +49,7 @@ describe CASinoCore::Processor::Logout do
 
         context '(not whitelisted)' do
           before(:each) do
-            FactoryGirl.create :service_rule, :regex, url: '^https://.*'
+            create :service_rule, :regex, url: '^https://.*'
           end
 
           it 'calls the #user_logged_out method on the listener and passes no URL' do
