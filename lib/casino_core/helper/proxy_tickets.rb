@@ -1,9 +1,7 @@
 module CASinoCore
   module Helper
     module ProxyTickets
-
-      class ValidationResult < CASinoCore::Model::ValidationResult; end
-
+      include CASinoCore::Concerns::Results
       include CASinoCore::Helper::Logger
       include CASinoCore::Helper::Tickets
 
