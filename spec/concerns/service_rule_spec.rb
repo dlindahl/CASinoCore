@@ -6,12 +6,19 @@ describe CASinoCore::Concerns::ServiceRule do
   let(:poro_model) do
     Class.new(Poro) do
       include CASinoCore::Concerns::ServiceRule
+      attr_accessor :url, :regex
+
+      def initialize(params = {})
+        params.each{|k,v| instance_variable_set("@#{k}",v) }
+      end
     end
   end
 
+  let(:params) { Hash.new }
+
   before { stub_const 'Model', model }
 
-  subject(:instance) { Model.new }
+  subject(:instance) { Model.new params }
 
   describe '.allowed?' do
     subject { Model.allowed?(service_url) }
@@ -92,6 +99,97 @@ describe CASinoCore::Concerns::ServiceRule do
       let(:model) { poro_model }
 
       let(:service_url) { 'dummy_url' }
+
+      it 'raises an exception' do
+        expect{subject}.to raise_error NotImplementedError
+      end
+    end
+  end
+
+  describe '#unsafe_regex?' do
+    let(:model) { poro_model }
+
+    let(:params) { { url:url, regex:true } }
+
+    subject { super().unsafe_regex? }
+
+    context 'with an unsafe Regex-style URL' do
+      let(:url) { '[a-z]' }
+
+      it { should be_true }
+    end
+
+    context 'with an safe Regex-style URL' do
+      let(:url) { '^[a-z]' }
+
+      it { should be_false }
+    end
+  end
+
+  describe '.add' do
+    let(:name) { 'google' }
+    let(:url) { 'http://google.com' }
+
+    subject { Model.add(name, url) }
+
+    context 'with an ActiveModel-compatible class' do
+      let(:model) { am_model }
+
+      context 'and valid rule parameters' do
+        it 'adds a new rule' do
+          expect{subject}.to change{Model.count}.by(1)
+        end
+      end
+
+      context 'and invalid rule parameters' do
+        let(:name) { '' }
+
+        it 'raises an error' do
+          expect{subject}.to raise_error ActiveRecord::RecordInvalid
+        end
+      end
+
+      context 'and an unsafe Regex' do
+        let(:url) { 'regex:[a-z]' }
+
+        before do
+          CASinoCore.config.logger.stub(:warn).and_call_original
+        end
+
+        it 'logs a warning' do
+          subject
+
+          expect(CASinoCore.config.logger).to have_received(:warn)
+        end
+      end
+    end
+
+    context 'with a PORO class' do
+      let(:model) { poro_model }
+
+      let(:service_url) { 'dummy_url' }
+
+      it 'raises an exception' do
+        expect{subject}.to raise_error NotImplementedError
+      end
+    end
+  end
+
+  describe '#save!' do
+    subject { super().save! }
+
+    let(:params) { { name:'foo', url:'bar' } }
+
+    context 'with an ActiveModel-compatible class' do
+      let(:model) { am_model }
+
+      it 'raises an exception' do
+        expect{subject}.not_to raise_error
+      end
+    end
+
+    context 'with a PORO class' do
+      let(:model) { poro_model }
 
       it 'raises an exception' do
         expect{subject}.to raise_error NotImplementedError
