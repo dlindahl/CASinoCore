@@ -14,8 +14,6 @@ module CASinoCore
   autoload :Notifiers, 'casino_core/notifiers.rb'
   autoload :Processor, 'casino_core/processor.rb'
 
-  require 'casino_core/railtie' if defined?(Rails)
-
   env = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
 
   defaults = {
