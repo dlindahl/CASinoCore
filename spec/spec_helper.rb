@@ -7,6 +7,7 @@ require 'coveralls'
 SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.start do
   add_filter '/spec'
+  add_filter '/vendor'
   base_path = "#{File.dirname(__FILE__)}/../"
   Dir["#{base_path}lib/casino_core/*.rb"].each do |f|
     f.gsub!(/\A#{base_path}(.+)\.rb\z/, '\1')
