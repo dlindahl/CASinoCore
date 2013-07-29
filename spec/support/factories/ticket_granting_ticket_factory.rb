@@ -1,8 +1,8 @@
 require 'factory_girl'
 
 FactoryGirl.define do
-  factory :ticket_granting_ticket, class: CASinoCore::Model::TicketGrantingTicket do
-    user
+  factory :test_ticket_granting_ticket, aliases:[:ticket_granting_ticket] do
+    association :user, factory: :test_user
     sequence :ticket do |n|
       "TGC-ticket#{n}"
     end
@@ -10,6 +10,14 @@ FactoryGirl.define do
 
     trait :awaiting_two_factor_authentication do
       awaiting_two_factor_authentication true
+    end
+
+    trait :long_term do
+      long_term true
+    end
+
+    trait :expired do
+      created_at { (lifetime+1).ago }
     end
   end
 end

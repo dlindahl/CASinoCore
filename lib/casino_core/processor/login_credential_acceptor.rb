@@ -55,11 +55,11 @@ class CASinoCore::Processor::LoginCredentialAcceptor < CASinoCore::Processor
           acquire_service_ticket(ticket_granting_ticket, @params[:service], true).service_with_ticket_url
         end
         if long_term
-          @listener.user_logged_in(url, ticket_granting_ticket.ticket, CASinoCore::Settings.ticket_granting_ticket[:lifetime_long_term].seconds.from_now)
+          @listener.user_logged_in(url, ticket_granting_ticket.ticket, CASinoCore.config.ticket_granting_ticket[:lifetime_long_term].seconds.from_now)
         else
           @listener.user_logged_in(url, ticket_granting_ticket.ticket)
         end
-      rescue ServiceNotAllowedError => e
+      rescue CASinoCore::ServiceNotAllowedError => e
         @listener.service_not_allowed(clean_service_url @params[:service])
       end
     end

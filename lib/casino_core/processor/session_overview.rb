@@ -1,6 +1,5 @@
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The SessionOverview processor to list all open session for the currently signed in user.
 #
@@ -18,7 +17,7 @@ class CASinoCore::Processor::SessionOverview < CASinoCore::Processor
     if tgt.nil?
       @listener.user_not_logged_in
     else
-      ticket_granting_tickets = tgt.user.ticket_granting_tickets.where(awaiting_two_factor_authentication: false).order('updated_at DESC')
+      ticket_granting_tickets = tgt.user.authenticated_tickets
       @listener.ticket_granting_tickets_found(ticket_granting_tickets)
     end
   end

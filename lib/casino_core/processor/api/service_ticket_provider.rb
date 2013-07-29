@@ -1,6 +1,5 @@
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 require 'casino_core/builder'
 
 # The ServiceTicketProvider processor should be used to handle API calls: POST requests to /cas/v1/tickets/<ticket_granting_ticket>
@@ -41,7 +40,7 @@ class CASinoCore::Processor::API::ServiceTicketProvider < CASinoCore::Processor
       begin
         create_service_ticket
         callback_granted_service_ticket
-      rescue ServiceNotAllowedError
+      rescue CASinoCore::ServiceNotAllowedError
         callback_service_not_allowed
       end
     when (@service_url and not @ticket_granting_ticket)

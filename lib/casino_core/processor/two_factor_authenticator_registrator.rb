@@ -1,7 +1,6 @@
 require 'rotp'
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The TwoFactorAuthenticatorRegistrator processor can be used as the first step to register a new two-factor authenticator.
 # It is inactive until activated using TwoFactorAuthenticatorActivator.
@@ -20,7 +19,7 @@ class CASinoCore::Processor::TwoFactorAuthenticatorRegistrator < CASinoCore::Pro
     if tgt.nil?
       @listener.user_not_logged_in
     else
-      two_factor_authenticator = tgt.user.two_factor_authenticators.create! secret: ROTP::Base32.random_base32
+      two_factor_authenticator = tgt.user.create_two_factor_authenticator! secret: ROTP::Base32.random_base32
       @listener.two_factor_authenticator_registered(two_factor_authenticator)
     end
   end

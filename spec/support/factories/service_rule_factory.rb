@@ -1,7 +1,7 @@
 require 'factory_girl'
 
 FactoryGirl.define do
-  factory :service_rule, class: CASinoCore::Model::ServiceRule do
+  factory :test_service_rule, aliases:[:service_rule] do
     sequence :order do |n|
       n
     end

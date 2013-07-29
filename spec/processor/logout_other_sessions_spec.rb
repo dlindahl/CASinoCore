@@ -13,17 +13,17 @@ describe CASinoCore::Processor::OtherSessionsDestroyer do
     end
 
     context 'with an existing ticket-granting ticket' do
-      let(:user) { FactoryGirl.create :user }
-      let!(:other_users_ticket_granting_tickets) { FactoryGirl.create_list :ticket_granting_ticket, 3 }
-      let!(:other_ticket_granting_tickets) { FactoryGirl.create_list :ticket_granting_ticket, 3, user: user }
-      let!(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket, user: user }
+      let(:user) { create :user }
+      let!(:other_users_ticket_granting_tickets) { create_list :ticket_granting_ticket, 3 }
+      let!(:other_ticket_granting_tickets) { create_list :ticket_granting_ticket, 3, user: user }
+      let!(:ticket_granting_ticket) { create :ticket_granting_ticket, user: user }
       let(:tgt) { ticket_granting_ticket.ticket }
       let(:user_agent) { ticket_granting_ticket.user_agent }
 
       it 'deletes all other ticket-granting tickets' do
         lambda do
           processor.process(params, cookies, user_agent)
-        end.should change(CASinoCore::Model::TicketGrantingTicket, :count).by(-3)
+        end.should change{CASinoCore.implementor(:ticket_granting_ticket).count}.by(-3)
       end
 
       it 'calls the #user_logged_out method on the listener' do

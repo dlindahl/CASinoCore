@@ -20,7 +20,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
 
     context 'when logged out' do
       it 'calls the #user_not_logged_in method on the listener' do
-        listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore::Model::LoginTicket))
+        listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore.implementor(:login_ticket)))
         processor.process
       end
 
@@ -39,7 +39,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
           let(:params) { { gateway: 'true' } }
 
           it 'calls the #user_not_logged_in method on the listener' do
-            listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore::Model::LoginTicket))
+            listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore.implementor(:login_ticket)))
             processor.process
           end
         end
@@ -47,7 +47,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
     end
 
     context 'when logged in' do
-      let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket }
+      let(:ticket_granting_ticket) { create :ticket_granting_ticket }
       let(:user_agent) { ticket_granting_ticket.user_agent }
       let(:cookies) { { tgt: ticket_granting_ticket.ticket } }
 
@@ -56,10 +56,10 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
       end
 
       context 'when two-factor authentication is pending' do
-        let(:ticket_granting_ticket) { FactoryGirl.create :ticket_granting_ticket, :awaiting_two_factor_authentication }
+        let(:ticket_granting_ticket) { create :ticket_granting_ticket, :awaiting_two_factor_authentication }
 
         it 'calls the #user_not_logged_in method on the listener' do
-          listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore::Model::LoginTicket))
+          listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore.implementor(:login_ticket)))
           processor.process(nil, cookies, user_agent)
         end
       end
@@ -71,7 +71,7 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
         end
 
         it 'calls the #user_not_logged_in method on the listener' do
-          listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore::Model::LoginTicket))
+          listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore.implementor(:login_ticket)))
           processor.process(nil, cookies, user_agent)
         end
       end
@@ -88,12 +88,12 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
         it 'generates a service ticket' do
           lambda do
             processor.process(params, cookies, user_agent)
-          end.should change(CASinoCore::Model::ServiceTicket, :count).by(1)
+          end.should change{CASinoCore.implementor(:service_ticket).count}.by(1)
         end
 
         context 'with renew parameter' do
           it 'calls the #user_not_logged_in method on the listener' do
-            listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore::Model::LoginTicket))
+            listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore.implementor(:login_ticket)))
             processor.process(params.merge({ renew: 'true' }), cookies)
           end
         end
@@ -118,14 +118,14 @@ describe CASinoCore::Processor::LoginCredentialRequestor do
         it 'does not generate a service ticket' do
           lambda do
             processor.process(nil, cookies, user_agent)
-          end.should change(CASinoCore::Model::ServiceTicket, :count).by(0)
+          end.should_not change{CASinoCore.implementor(:service_ticket).count}
         end
 
         context 'with a changed browser' do
           let(:user_agent) { 'FooBar 1.0' }
 
           it 'calls the #user_not_logged_in method on the listener' do
-            listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore::Model::LoginTicket))
+            listener.should_receive(:user_not_logged_in).with(kind_of(CASinoCore.implementor(:login_ticket)))
             processor.process(nil, cookies, user_agent)
           end
         end

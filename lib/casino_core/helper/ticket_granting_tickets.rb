@@ -8,7 +8,7 @@ module CASinoCore
       include CASinoCore::Helper::Logger
 
       def find_valid_ticket_granting_ticket(tgt, user_agent, ignore_two_factor = false)
-        ticket_granting_ticket = CASinoCore::Model::TicketGrantingTicket.where(ticket: tgt).first
+        ticket_granting_ticket = CASinoCore.implementor(:ticket_granting_ticket).find_ticket(tgt)
         unless ticket_granting_ticket.nil?
           if ticket_granting_ticket.expired?
             logger.info "Ticket-granting ticket expired (Created: #{ticket_granting_ticket.created_at})"
@@ -33,21 +33,23 @@ module CASinoCore
         user_data = authentication_result[:user_data]
         user = load_or_initialize_user(authentication_result[:authenticator], user_data[:username], user_data[:extra_attributes])
         cleanup_expired_ticket_granting_tickets(user)
-        user.ticket_granting_tickets.create!({
+
+        user.create_ticket_granting_ticket!({
           ticket: random_ticket_string('TGC'),
-          awaiting_two_factor_authentication: !user.active_two_factor_authenticator.nil?,
+          awaiting_two_factor_authentication: !user.active_two_factor_authenticators.empty?,
           user_agent: user_agent,
           long_term: !!long_term
         })
       end
 
       def load_or_initialize_user(authenticator, username, extra_attributes)
-        user = CASinoCore::Model::User.where(
+        user = CASinoCore.implementor(:user).load_or_initialize(
           authenticator: authenticator,
-          username: username).first_or_initialize
+          username: username
+        )
         user.extra_attributes = extra_attributes
         user.save!
-        return user
+        user
       end
 
       def remove_ticket_granting_ticket(ticket_granting_ticket, user_agent = nil)
@@ -58,7 +60,7 @@ module CASinoCore
       end
 
       def cleanup_expired_ticket_granting_tickets(user)
-        CASinoCore::Model::TicketGrantingTicket.cleanup(user)
+        CASinoCore.implementor(:ticket_granting_ticket).cleanup(user)
       end
 
     end

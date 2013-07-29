@@ -5,17 +5,17 @@ module CASinoCore
       include CASinoCore::Helper::Tickets
 
       def acquire_login_ticket
-        ticket = CASinoCore::Model::LoginTicket.create ticket: random_ticket_string('LT')
+        ticket = implementor.create ticket:random_ticket_string('LT')
         logger.debug "Created login ticket '#{ticket.ticket}'"
         ticket
       end
 
       def login_ticket_valid?(lt)
-        ticket = CASinoCore::Model::LoginTicket.find_by_ticket lt
+        ticket = implementor.find_ticket lt
         if ticket.nil?
           logger.info "Login ticket '#{lt}' not found"
           false
-        elsif ticket.created_at < CASinoCore::Settings.login_ticket[:lifetime].seconds.ago
+        elsif ticket.created_at < CASinoCore.config.login_ticket[:lifetime].seconds.ago
           logger.info "Login ticket '#{ticket.ticket}' expired"
           false
         else
@@ -23,6 +23,12 @@ module CASinoCore
           ticket.delete
           true
         end
+      end
+
+    private
+
+      def implementor
+        CASinoCore.implementor(:login_ticket)
       end
     end
   end

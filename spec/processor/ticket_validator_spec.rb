@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-[CASinoCore::Processor::ServiceTicketValidator, CASinoCore::Processor::ProxyTicketValidator].each do |class_under_test|
-  describe class_under_test do
+describe 'Ticket Validators' do
+  shared_examples_for 'ticket validator' do
     describe '#process' do
       let(:listener) { Object.new }
       let(:processor) { described_class.new(listener) }
-      let(:service_ticket) { FactoryGirl.create :service_ticket }
+      let(:service_ticket) { create :service_ticket }
       let(:parameters) { { service: service_ticket.service, ticket: service_ticket.ticket }}
       let(:regex_failure) { /\A\<cas\:serviceResponse.*\n.*authenticationFailure/ }
       let(:regex_success) { /\A\<cas\:serviceResponse.*\n.*authenticationSuccess/ }
@@ -140,7 +140,7 @@ require 'spec_helper'
 
           it 'contacts the callback server' do
             processor.process(parameters_with_pgt_url)
-            proxy_granting_ticket = CASinoCore::Model::ProxyGrantingTicket.last
+            proxy_granting_ticket = CASinoCore.implementor(:proxy_granting_ticket).last
             WebMock.should have_requested(:get, 'https://www.example.org').with(query: {
               pgtId: proxy_granting_ticket.ticket,
               pgtIou: proxy_granting_ticket.iou
@@ -195,5 +195,13 @@ require 'spec_helper'
         end
       end
     end
+  end
+
+  describe CASinoCore::Processor::ServiceTicketValidator do
+    include_examples 'ticket validator'
+  end
+
+  describe CASinoCore::Processor::ProxyTicketValidator do
+    include_examples 'ticket validator'
   end
 end

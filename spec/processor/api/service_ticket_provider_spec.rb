@@ -18,13 +18,13 @@ describe CASinoCore::Processor::API::ServiceTicketProvider do
     end
 
     context 'with a valid ticket-granting ticket' do
-      let(:ticket_granting_ticket) { FactoryGirl.create(:ticket_granting_ticket) }
+      let(:ticket_granting_ticket) { create(:ticket_granting_ticket) }
       let(:ticket) { ticket_granting_ticket.ticket }
       let(:user_agent) { ticket_granting_ticket.user_agent }
 
       context 'with a not allowed service' do
         before(:each) do
-          FactoryGirl.create :service_rule, :regex, url: '^https://.*'
+          create :service_rule, :regex, url: '^https://.*'
         end
         let(:service) { 'http://www.example.org/' }
 
@@ -43,7 +43,7 @@ describe CASinoCore::Processor::API::ServiceTicketProvider do
         listener.should_receive(:granted_service_ticket_via_api).with(/^ST\-/)
         expect {
           processor.process(ticket, parameters, user_agent)
-        }.to change(CASinoCore::Model::ServiceTicket, :count).by(1)
+        }.to change{CASinoCore.implementor(:service_ticket).count}.by(1)
       end
 
       context 'without a service' do

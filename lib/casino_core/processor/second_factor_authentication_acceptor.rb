@@ -1,7 +1,6 @@
 require 'rotp'
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The SecondFactorAuthenticationAcceptor processor can be used to activate a previously generated ticket-granting ticket with pending two-factor authentication.
 #
@@ -26,7 +25,7 @@ class CASinoCore::Processor::SecondFactorAuthenticationAcceptor < CASinoCore::Pr
     if tgt.nil?
       @listener.user_not_logged_in
     else
-      validation_result = validate_one_time_password(params[:otp], tgt.user.active_two_factor_authenticator)
+      validation_result = validate_one_time_password(params[:otp], tgt.user.active_two_factor_authenticators.first)
       if validation_result.success?
         tgt.awaiting_two_factor_authentication = false
         tgt.save!
@@ -35,11 +34,11 @@ class CASinoCore::Processor::SecondFactorAuthenticationAcceptor < CASinoCore::Pr
             acquire_service_ticket(tgt, params[:service], true).service_with_ticket_url
           end
           if tgt.long_term?
-            @listener.user_logged_in(url, tgt.ticket, CASinoCore::Settings.ticket_granting_ticket[:lifetime_long_term].seconds.from_now)
+            @listener.user_logged_in(url, tgt.ticket, CASinoCore.config.ticket_granting_ticket[:lifetime_long_term].seconds.from_now)
           else
             @listener.user_logged_in(url, tgt.ticket)
           end
-        rescue ServiceNotAllowedError => e
+        rescue CASinoCore::ServiceNotAllowedError
           @listener.service_not_allowed(clean_service_url params[:service])
         end
       else

@@ -8,7 +8,7 @@ describe CASinoCore::Processor::ProxyTicketValidator do
     let(:regex_success) { /\A<cas:serviceResponse.*\n.*authenticationSuccess/ }
 
     context 'with a login ticket' do
-      let(:login_ticket) { FactoryGirl.create :login_ticket }
+      let(:login_ticket) { create :login_ticket }
       let(:parameters) { { ticket: login_ticket.ticket, service: 'http://www.example.org/' } }
 
       it 'calls the #validation_failed method on the listener' do
@@ -18,7 +18,7 @@ describe CASinoCore::Processor::ProxyTicketValidator do
     end
 
     context 'with an unconsumed proxy ticket' do
-      let(:proxy_ticket) { FactoryGirl.create :proxy_ticket }
+      let(:proxy_ticket) { create :proxy_ticket }
       let(:parameters) { { ticket: proxy_ticket.ticket, service: proxy_ticket.service } }
       let(:regex_proxy) { /<cas:proxies>\s*<cas:proxy>#{proxy_ticket.proxy_granting_ticket.pgt_url}<\/cas:proxy>\s*<\/cas:proxies>/ }
 
@@ -34,7 +34,7 @@ describe CASinoCore::Processor::ProxyTicketValidator do
 
       context 'with an expired proxy ticket' do
         before(:each) do
-          CASinoCore::Model::ProxyTicket.any_instance.stub(:expired?).and_return(true)
+          CASinoCore.implementor(:proxy_ticket).any_instance.stub(:expired?).and_return(true)
         end
 
         it 'calls the #validation_failed method on the listener' do

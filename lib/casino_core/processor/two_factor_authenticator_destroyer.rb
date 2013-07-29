@@ -1,7 +1,6 @@
 require 'rotp'
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The TwoFactorAuthenticatorDestroyer processor can be used to deactivate a previously activated two-factor authenticator.
 #
@@ -26,7 +25,7 @@ class CASinoCore::Processor::TwoFactorAuthenticatorDestroyer < CASinoCore::Proce
     if tgt.nil?
       @listener.user_not_logged_in
     else
-      authenticator = tgt.user.two_factor_authenticators.where(id: params[:id]).first
+      authenticator = tgt.user.two_factor_authenticator(params[:id])
       if authenticator
         authenticator.destroy
         @listener.two_factor_authenticator_destroyed

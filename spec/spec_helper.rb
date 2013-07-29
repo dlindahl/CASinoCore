@@ -1,5 +1,6 @@
 ENV['RAILS_ENV'] ||= ENV['DATABASE_ENV'] || 'test'
 
+require 'awesome_print'
 require 'active_support/core_ext'
 require 'simplecov'
 require 'coveralls'
@@ -7,6 +8,7 @@ require 'coveralls'
 SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.start do
   add_filter '/spec'
+  add_filter '/vendor'
   base_path = "#{File.dirname(__FILE__)}/../"
   Dir["#{base_path}lib/casino_core/*.rb"].each do |f|
     f.gsub!(/\A#{base_path}(.+)\.rb\z/, '\1')
@@ -33,3 +35,5 @@ require 'casino_core'
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
+
+Dir["#{File.dirname(__FILE__)}/test_models/**/*.rb"].each {|f| require f}

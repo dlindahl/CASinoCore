@@ -2,9 +2,27 @@ require 'spec_helper'
 
 describe CASinoCore::Processor::API::LoginCredentialAcceptor do
   describe '#process' do
+    let(:ticket_granting_ticket) { CASinoCore.implementor(:ticket_granting_ticket) }
     let(:listener) { Object.new }
     let(:processor) { described_class.new(listener) }
     let(:user_agent) { 'ThisIsATestBrwoser 1.0' }
+    let(:password) { 'foobar123' }
+    let(:authenticator) do
+      CASinoCore::Authenticator::Static.new(
+        users: {
+          testuser: {
+            password: password,
+            name: 'Test User'
+          }
+        }
+      )
+    end
+
+    before do
+      CASinoCore.configure do |cfg|
+        cfg.authenticators[:static] = authenticator
+      end
+    end
 
     context 'with invalid credentials' do
       let(:login_data) { { username: 'testuser', password: 'wrong' } }
@@ -21,12 +39,12 @@ describe CASinoCore::Processor::API::LoginCredentialAcceptor do
       it 'does not generate a ticket-granting ticket' do
         expect {
           processor.process(login_data, user_agent)
-        }.to_not change(CASinoCore::Model::TicketGrantingTicket, :count)
+        }.to_not change{ticket_granting_ticket.count}
       end
     end
 
     context 'with valid credentials' do
-      let(:login_data) { { username: 'testuser', password: 'foobar123' } }
+      let(:login_data) { { username:'testuser', password:password } }
 
       before(:each) do
         listener.stub(:user_logged_in_via_api)
@@ -40,12 +58,12 @@ describe CASinoCore::Processor::API::LoginCredentialAcceptor do
       it 'generates a ticket-granting ticket' do
         expect {
           processor.process(login_data, user_agent)
-        }.to change(CASinoCore::Model::TicketGrantingTicket, :count).by(1)
+        }.to change{ticket_granting_ticket.count}.by(1)
       end
 
       it 'sets the user-agent in the ticket-granting ticket' do
         processor.process(login_data, user_agent)
-        CASinoCore::Model::TicketGrantingTicket.last.user_agent.should == user_agent
+        ticket_granting_ticket.last.user_agent.should == user_agent
       end
     end
   end

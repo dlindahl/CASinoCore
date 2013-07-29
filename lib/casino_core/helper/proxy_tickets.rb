@@ -1,14 +1,12 @@
 module CASinoCore
   module Helper
     module ProxyTickets
-
-      class ValidationResult < CASinoCore::Model::ValidationResult; end
-
+      include CASinoCore::Concerns::Results
       include CASinoCore::Helper::Logger
       include CASinoCore::Helper::Tickets
 
       def acquire_proxy_ticket(proxy_granting_ticket, service)
-        proxy_granting_ticket.proxy_tickets.create!({
+        proxy_granting_ticket.create_proxy_ticket!({
           ticket: random_ticket_string('PT'),
           service: service,
         })
@@ -37,7 +35,7 @@ module CASinoCore
 
       private
       def validate_existing_ticket_for_service(ticket, service, renew = false)
-        if ticket.is_a?(CASinoCore::Model::ServiceTicket)
+        if ticket.is_a?(CASinoCore.implementor(:service_ticket))
           service = clean_service_url(service)
         end
         if ticket.consumed?

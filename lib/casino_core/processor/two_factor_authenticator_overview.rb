@@ -1,6 +1,5 @@
 require 'casino_core/processor'
 require 'casino_core/helper'
-require 'casino_core/model'
 
 # The TwoFactorAuthenticatorOverview processor lists registered two factor devices for the currently signed in user.
 #
@@ -18,7 +17,7 @@ class CASinoCore::Processor::TwoFactorAuthenticatorOverview < CASinoCore::Proces
     if tgt.nil?
       @listener.user_not_logged_in
     else
-      @listener.two_factor_authenticators_found(tgt.user.two_factor_authenticators.where(active: true))
+      @listener.two_factor_authenticators_found(tgt.user.active_two_factor_authenticators)
     end
   end
 end

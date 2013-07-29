@@ -1,5 +1,7 @@
-root_path   = File.join(File.dirname(__FILE__),'..','..')
-schema_path = File.join(root_path, 'db')
+require 'active_record'
 
-CASinoCore.send(:establish_connection, ENV['RAILS_ENV'], root_path)
-load File.join(schema_path, 'schema.rb')
+ActiveRecord::Base.establish_connection(
+  adapter: 'sqlite3',
+  database: ':memory:',
+  verbosity: 'quiet'
+)

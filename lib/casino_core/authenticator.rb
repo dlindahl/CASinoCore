@@ -5,7 +5,7 @@ module CASinoCore
     class AuthenticatorError < StandardError; end
 
     def validate(username, password)
-      raise NotImplementedError, "This method must be implemented by a class extending #{self.class}"
+      raise NotImplementedError, "The :validate method must be implemented by a class extending #{self.class}"
     end
   end
 end
